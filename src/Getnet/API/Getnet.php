@@ -226,6 +226,36 @@ class Getnet
     }
 
     /**
+     * @param $payment_id
+     * @param $amount_val
+     * @return AuthorizeResponse|BaseResponse
+     */
+    public function AuthorizeCancelAnterior($payment_id, $amount_val, $cancel_custom_key)
+    {
+        $data = array(
+            "payment_id" => $payment_id,
+            "cancel_amount" => $amount_val,
+            "cancel_custom_key" => $cancel_custom_key
+        );
+
+        try {
+            $request = new Request($this);
+            $response = $request->post($this, "/v1/payments/cancel/request", json_encode($data));
+
+        } catch (\Exception $e) {
+
+            $error = new BaseResponse();
+            $error->mapperJson(json_decode($e->getMessage(), true));
+
+            return $error;
+        }
+        $authresponse = new AuthorizeResponse();
+        $authresponse->mapperJson($response);
+
+        return $authresponse;
+    }
+
+    /**
      * @param Transaction $transaction
      * @return BaseResponse|BoletoRespose
      */
